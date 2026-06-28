@@ -4,18 +4,20 @@ import com.touroperator.application.dto.command.CreateTourCommand;
 import com.touroperator.application.dto.command.UpdateTourCommand;
 import com.touroperator.application.dto.request.CreateTourRequest;
 import com.touroperator.application.dto.request.UpdateTourRequest;
+import com.touroperator.application.dto.response.PageResponse;
 import com.touroperator.application.dto.response.TourResponse;
+import com.touroperator.application.mapper.PageMapper;
 import com.touroperator.application.mapper.TourRequestMapper;
 import com.touroperator.application.mapper.TourResponseMapper;
 import com.touroperator.domain.model.Tour;
 import com.touroperator.domain.port.in.TourUseCase;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 @RestController
 @RequestMapping("api/v1/tours")
@@ -24,10 +26,13 @@ public class TourController {
     private final TourUseCase  tourUseCase;
 
     @GetMapping
-    public ResponseEntity<List<TourResponse>> getAllTours() {
+    public ResponseEntity<PageResponse<TourResponse>> getAllTours(Pageable pageable) {
+
         return ResponseEntity.ok(
-                TourResponseMapper.toResponse(
-                        tourUseCase.getAllTours())
+                PageMapper.toResponse(
+                        tourUseCase.getAllTours(pageable)
+                                .map(TourResponseMapper::toResponse)
+                )
         );
     }
     @GetMapping("/{id}")

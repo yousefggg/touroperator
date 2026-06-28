@@ -1,8 +1,8 @@
 package com.touroperator.domain.port.out;
 
 import com.touroperator.domain.model.Tour;
-
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import java.util.Optional;
 
 public interface TourRepository {
@@ -11,7 +11,7 @@ public interface TourRepository {
 
     Optional<Tour> findById(Long id);
 
-    List<Tour> findAll();
+    Page<Tour> findAll(Pageable pageable);
 
     void deleteById(Long id);
 }

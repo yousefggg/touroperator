@@ -7,6 +7,8 @@ import com.touroperator.domain.model.Tour;
 import com.touroperator.domain.port.in.TourUseCase;
 import com.touroperator.domain.port.out.TourRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -59,11 +61,9 @@ public class TourService implements TourUseCase {
     }
 
     @Override
-    public List<Tour> getAllTours() {
-
-        log.info("Getting all tours");
-
-        return tourRepository.findAll();
+    public Page<Tour> getAllTours(Pageable pageable) {
+        log.info("Getting all tours with pagination");
+        return tourRepository.findAll(pageable);
     }
 
     @Override

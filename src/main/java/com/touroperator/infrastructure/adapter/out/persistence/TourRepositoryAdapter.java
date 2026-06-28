@@ -5,6 +5,8 @@ import com.touroperator.domain.port.out.TourRepository;
 import com.touroperator.infrastructure.adapter.out.persistence.entity.TourEntity;
 import com.touroperator.infrastructure.adapter.out.persistence.jpa.TourJpaRepository;
 import com.touroperator.infrastructure.adapter.out.persistence.mapper.TourMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -31,11 +33,13 @@ public class TourRepositoryAdapter implements TourRepository{
     }
 
     @Override
-    public List<Tour> findAll() {
-        List<TourEntity> entityList = tourJpaRepository.findAll();
-        return entityList.stream().map(TourMapper::toDomain).toList();
-    }
+    public Page<Tour> findAll(Pageable pageable) {
 
+        Page<TourEntity> entityPage =
+                tourJpaRepository.findAll(pageable);
+
+        return entityPage.map(TourMapper::toDomain);
+    }
     @Override
     public void deleteById(Long id) {
         tourJpaRepository.deleteById(id);
