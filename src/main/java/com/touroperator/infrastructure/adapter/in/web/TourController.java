@@ -2,6 +2,7 @@ package com.touroperator.infrastructure.adapter.in.web;
 
 import com.touroperator.application.dto.command.CreateTourCommand;
 import com.touroperator.application.dto.command.UpdateTourCommand;
+import com.touroperator.application.dto.filter.TourFilter;
 import com.touroperator.application.dto.request.CreateTourRequest;
 import com.touroperator.application.dto.request.UpdateTourRequest;
 import com.touroperator.application.dto.response.PageResponse;
@@ -26,11 +27,14 @@ public class TourController {
     private final TourUseCase  tourUseCase;
 
     @GetMapping
-    public ResponseEntity<PageResponse<TourResponse>> getAllTours(Pageable pageable) {
+    public ResponseEntity<PageResponse<TourResponse>> getAllTours(
+            TourFilter filter,
+            Pageable pageable
+    ) {
 
         return ResponseEntity.ok(
                 PageMapper.toResponse(
-                        tourUseCase.getAllTours(pageable)
+                        tourUseCase.getAllTours(filter, pageable)
                                 .map(TourResponseMapper::toResponse)
                 )
         );

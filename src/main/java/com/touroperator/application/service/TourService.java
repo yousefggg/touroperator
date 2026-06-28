@@ -2,6 +2,7 @@ package com.touroperator.application.service;
 
 import com.touroperator.application.dto.command.CreateTourCommand;
 import com.touroperator.application.dto.command.UpdateTourCommand;
+import com.touroperator.application.dto.filter.TourFilter;
 import com.touroperator.domain.exception.TourNotFoundException;
 import com.touroperator.domain.model.Tour;
 import com.touroperator.domain.port.in.TourUseCase;
@@ -61,9 +62,8 @@ public class TourService implements TourUseCase {
     }
 
     @Override
-    public Page<Tour> getAllTours(Pageable pageable) {
-        log.info("Getting all tours with pagination");
-        return tourRepository.findAll(pageable);
+    public Page<Tour> getAllTours(TourFilter filter, Pageable pageable) {
+        return tourRepository.findAll(filter, pageable);
     }
 
     @Override
