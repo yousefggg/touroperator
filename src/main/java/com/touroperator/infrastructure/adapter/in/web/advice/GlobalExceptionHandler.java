@@ -1,9 +1,10 @@
 package com.touroperator.infrastructure.adapter.in.web.advice;
 
+import com.touroperator.application.dto.response.ErrorResponse;
 import com.touroperator.domain.exception.OrderNotFoundException;
 import com.touroperator.domain.exception.TourNotFoundException;
 import com.touroperator.domain.exception.UserAlreadyExistsException;
-import com.touroperator.application.dto.response.ErrorResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -14,11 +15,14 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(OrderNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleOrderNotFoundException(OrderNotFoundException ex) {
+
+        log.warn("Order not found: {}", ex.getMessage());
 
         ErrorResponse response = new ErrorResponse(
                 LocalDateTime.now(),
@@ -34,6 +38,8 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(TourNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleTourNotFoundException(TourNotFoundException ex) {
 
+        log.warn("Tour not found: {}", ex.getMessage());
+
         ErrorResponse response = new ErrorResponse(
                 LocalDateTime.now(),
                 HttpStatus.NOT_FOUND.value(),
@@ -47,6 +53,8 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(UserAlreadyExistsException.class)
     public ResponseEntity<ErrorResponse> handleUserAlreadyExistsException(UserAlreadyExistsException ex) {
+
+        log.warn("User already exists: {}", ex.getMessage());
 
         ErrorResponse response = new ErrorResponse(
                 LocalDateTime.now(),
@@ -69,6 +77,8 @@ public class GlobalExceptionHandler {
                         errors.put(error.getField(), error.getDefaultMessage())
                 );
 
+        log.warn("Validation failed: {}", errors);
+
         ErrorResponse response = new ErrorResponse(
                 LocalDateTime.now(),
                 HttpStatus.BAD_REQUEST.value(),
@@ -81,6 +91,8 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleAllExceptions(Exception ex) {
+
+        log.error("Unexpected server error", ex);
 
         ErrorResponse response = new ErrorResponse(
                 LocalDateTime.now(),

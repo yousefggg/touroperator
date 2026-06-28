@@ -9,6 +9,7 @@ import com.touroperator.application.mapper.TourRequestMapper;
 import com.touroperator.application.mapper.TourResponseMapper;
 import com.touroperator.domain.model.Tour;
 import com.touroperator.domain.port.in.TourUseCase;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -38,7 +39,7 @@ public class TourController {
     }
     @PostMapping
     public ResponseEntity<TourResponse> createTour(
-            @RequestBody CreateTourRequest request
+            @Valid @RequestBody CreateTourRequest request
     ) {
 
         CreateTourCommand command =
@@ -57,7 +58,7 @@ public class TourController {
     @PutMapping("/{id}")
     public ResponseEntity<TourResponse> updateTour(
             @PathVariable Long id,
-            @RequestBody UpdateTourRequest request
+            @Valid @RequestBody UpdateTourRequest request
     ) {
         UpdateTourCommand command =
                 TourRequestMapper.toCommand(id, request);
