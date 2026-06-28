@@ -8,7 +8,9 @@ import com.touroperator.infrastructure.adapter.out.persistence.jpa.TourJpaReposi
 import com.touroperator.infrastructure.adapter.out.persistence.mapper.TourMapper;
 import com.touroperator.infrastructure.adapter.out.persistence.specification.TourSpecification;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
@@ -39,34 +41,25 @@ public class TourRepositoryAdapter implements TourRepository {
     @Override
     public Page<Tour> findAll(TourFilter filter, Pageable pageable) {
 
-        Specification<TourEntity> spec = Specification.where((Specification<TourEntity>) null);
+        Specification<TourEntity> spec = Specification.where(TourSpecification.tourNameContains(filter.getTourName()))
+                .and(TourSpecification.priceGreaterOrEqual(filter.getMinPrice()))
+                .and(TourSpecification.priceLessOrEqual(filter.getMaxPrice()));
 
-        if (filter.getTourName() != null && !filter.getTourName().isBlank()) {
-            spec = spec.and((root, query, cb) ->
-                    cb.like(
-                            cb.lower(root.get("tourName")),
-                            "%" + filter.getTourName().toLowerCase() + "%"
-                    )
+        Pageable finalPageable = pageable;
+        if (pageable.getSort().isUnsorted() || pageable.getSort().toString().contains("[]")) {
+            finalPageable = PageRequest.of(
+                    pageable.getPageNumber(),
+                    pageable.getPageSize(),
+                    Sort.by("id").ascending()
             );
         }
 
-        if (filter.getMinPrice() != null) {
-            spec = spec.and((root, query, cb) ->
-                    cb.greaterThanOrEqualTo(root.get("tourPrice"), filter.getMinPrice())
-            );
-        }
-
-        if (filter.getMaxPrice() != null) {
-            spec = spec.and((root, query, cb) ->
-                    cb.lessThanOrEqualTo(root.get("tourPrice"), filter.getMaxPrice())
-            );
-        }
-
-        Page<TourEntity> result =
-                tourJpaRepository.findAll(spec, pageable);
+        Page<TourEntity> result = tourJpaRepository.findAll(spec, finalPageable);
 
         return result.map(TourMapper::toDomain);
     }
+
+
 
     @Override
     public void deleteById(Long id) {
