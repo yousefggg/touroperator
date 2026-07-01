@@ -1,6 +1,7 @@
 package com.touroperator.infrastructure.adapter.in.web.advice;
 
 import com.touroperator.application.dto.response.ErrorResponse;
+import com.touroperator.domain.exception.InvalidCredentialsException;
 import com.touroperator.domain.exception.OrderNotFoundException;
 import com.touroperator.domain.exception.TourNotFoundException;
 import com.touroperator.domain.exception.UserAlreadyExistsException;
@@ -64,6 +65,20 @@ public class GlobalExceptionHandler {
         );
 
         return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(response);
+    }
+    @ExceptionHandler(InvalidCredentialsException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidCredentialsException(InvalidCredentialsException ex) {
+        log.warn("Invalid credentials: {}", ex.getMessage());
+
+        ErrorResponse response = new ErrorResponse(
+                LocalDateTime.now(),
+                HttpStatus.UNAUTHORIZED.value(),
+                ex.getMessage(),
+                null
+        );
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(response);
     }
 
