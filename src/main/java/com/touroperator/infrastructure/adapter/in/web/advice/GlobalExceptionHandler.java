@@ -1,10 +1,7 @@
 package com.touroperator.infrastructure.adapter.in.web.advice;
 
 import com.touroperator.application.dto.response.ErrorResponse;
-import com.touroperator.domain.exception.InvalidCredentialsException;
-import com.touroperator.domain.exception.OrderNotFoundException;
-import com.touroperator.domain.exception.TourNotFoundException;
-import com.touroperator.domain.exception.UserAlreadyExistsException;
+import com.touroperator.domain.exception.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -102,6 +99,33 @@ public class GlobalExceptionHandler {
         );
 
         return ResponseEntity.badRequest().body(response);
+    }
+
+    @ExceptionHandler(TourNotAvailableException.class)
+    public ResponseEntity<ErrorResponse> handleTourNotAvailableException(TourNotAvailableException ex) {
+        log.warn("Tour not available: {}", ex.getMessage());
+        ErrorResponse response = new ErrorResponse(
+                LocalDateTime.now(),
+                HttpStatus.BAD_REQUEST.value(),
+                "Available error",
+                null
+        );
+        return ResponseEntity.badRequest().body(response);
+    }
+    @ExceptionHandler(BookingConflictException.class)
+    public ResponseEntity<ErrorResponse> handleBookingConflictException(BookingConflictException ex) {
+        log.warn("Booking conflict: {}", ex.getMessage());
+
+        ErrorResponse response = new ErrorResponse(
+                LocalDateTime.now(),
+                HttpStatus.CONFLICT.value(),
+                ex.getMessage(),
+                null
+        );
+
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(response);
     }
 
     @ExceptionHandler(Exception.class)
