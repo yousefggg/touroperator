@@ -1,5 +1,6 @@
 package com.touroperator.application.dto.request;
 
+import com.touroperator.application.validation.FutureDate;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -30,5 +31,6 @@ public class CreateTourRequest {
     private String duration;
 
     @NotNull(message = "Tour date is required")
+    @FutureDate
     private LocalDate dateTour;
 }
